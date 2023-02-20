@@ -1,17 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import {createRoot} from "react-dom/client";
+// import Gallery from "./project1/Gallery.js";
+// import App from "./project2/App.js";
+// import Quote from "./project3/Quote";
+// import ShopList from "./project4/ShopList";
+// import GitHub from "./project5/Github";
+// import VideoPlayer from "./project6/VideoPlayer";
+// import BMICalculator from "./project7/BMI-Calculator";
+import Pokemon from "./project8/Pokemon";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const root = document.querySelector("#react-root");
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// createRoot(root).render(<Gallery/>);
+
+// createRoot(root).render(<App/>);
+
+// createRoot(root).render(<Quote/>);
+
+// createRoot(root).render(<ShopList/>);
+
+// createRoot(root).render(<GitHub/>);
+
+// createRoot(root).render(<VideoPlayer/>);
+
+// createRoot(root).render(<BMICalculator/>);
+
+createRoot(root).render(<Pokemon/>)
