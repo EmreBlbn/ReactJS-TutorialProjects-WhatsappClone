@@ -25,9 +25,13 @@ import {createRoot} from "react-dom/client";
 // import Pokemon from "./project8/Pokemon";
 
 //Project 9
-import reportWebVitals from "./project9/ReportWebVitals";
-import "./project9/index.css";
-import PasswordGenerator from "./project9/PasswordGenerator";
+// import reportWebVitals from "./project9/ReportWebVitals";
+// import "./project9/index.css";
+// import PasswordGenerator from "./project9/PasswordGenerator";
+
+//Project 10
+import WhatsappApp from "./project10/WhatsappApp";
+import "./project10/index.css";
 
 const root = document.querySelector("#react-root");
 
@@ -56,5 +60,8 @@ const root = document.querySelector("#react-root");
 // createRoot(root).render(<Pokemon/>);
 
 //Project 9
-createRoot(root).render(<PasswordGenerator/>)
-reportWebVitals();
+// createRoot(root).render(<PasswordGenerator/>)
+// reportWebVitals();
+
+//Project 10
+createRoot(root).render(<WhatsappApp/>);
