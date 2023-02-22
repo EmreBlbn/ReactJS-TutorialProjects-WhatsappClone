@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import ContactListComponent from "./components/ContactListComponent";
 import ConversationComponent from "./components/ConversationComponent";
+import {useState} from "react";
+import {contactList} from "./Data";
 
 const Container = styled.div`
   display: flex;
@@ -10,10 +12,19 @@ const Container = styled.div`
   background: #f8f9fb;
 `;
 
-export default function WhatsappApp(){
+export default function WhatsappApp() {
 
-    return <Container>
-        <ContactListComponent/>
-        <ConversationComponent/>
-    </Container>
+    const [id, setId] = useState(1);
+
+    function onClick(newID) {
+        setId(newID);
+    }
+
+
+    return (
+        <Container>
+            <ContactListComponent onclick={onClick}/>
+            <ConversationComponent profilePic={contactList[id - 1].profilePic} name={contactList[id - 1].name}/>
+        </Container>
+    );
 }

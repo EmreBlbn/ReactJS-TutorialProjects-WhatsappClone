@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { contactList} from "../Data";
+import {contactList} from "../Data";
 
 const Container = styled.div`
   display: flex;
@@ -87,9 +87,9 @@ const MessageText = styled.span`
 `;
 
 
-function ContactComponent({userData}) {
+function ContactComponent({userData, onclick}) {
     return (
-        <ContactItem>
+        <ContactItem onClick={() => onclick(userData.id)}>
             <ProfileIcon src={userData.profilePic}/>
             <ContactInfo>
                 <ContactName>{userData.name}</ContactName>
@@ -100,7 +100,7 @@ function ContactComponent({userData}) {
     );
 }
 
-export default function ContactListComponent() {
+export default function ContactListComponent({onclick}) {
     return (
         <Container>
             <ProfileInfoDiv>
@@ -112,7 +112,7 @@ export default function ContactListComponent() {
                     <SearchInput placeholder="Search or start new chat"/>
                 </SearchContainer>
             </SearchBox>
-            {contactList.map((userData) => <ContactComponent userData={userData}/>)}
+            {contactList.map((userData) => <ContactComponent userData={userData} onclick={onclick}/>)}
 
         </Container>
     );

@@ -47,26 +47,26 @@ const MessageContainer = styled.div`
 `;
 
 const MessageDiv = styled.div`
-  justify-content: ${(props) => (props.isYours ?'flex-end':'flex-start')};
+  justify-content: ${(props) => (props.isYours ? 'flex-end' : 'flex-start')};
   display: flex;
   margin: 5px 16px;
 `;
 
 const Message = styled.div`
-  background: ${(props) => (props.isYours ?'#daf8cb':'white')};
+  background: ${(props) => (props.isYours ? '#daf8cb' : 'white')};
   max-width: 50%;
   color: #303030;
   padding: 8px 10px;
   font-size: 19px;
 `;
 
-export default function ConversationComponent(){
+export default function ConversationComponent({profilePic, name}) {
 
     return (
         <Container>
             <ProfileHeader>
-                <ProfileImage src="/profile/pp1.png"/>
-                Person 1
+                <ProfileImage src={profilePic}/>
+                {name}
             </ProfileHeader>
             <MessageContainer>
                 {messagesList.map((messageData) => (
