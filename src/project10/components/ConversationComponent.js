@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
 import {messagesList} from "../Data";
+import {useState} from "react";
 
 const Container = styled.div`
   display: flex;
@@ -17,6 +18,7 @@ const ProfileHeader = styled.div`
   padding: 15px;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
 `;
 
 const ProfileImage = styled.img`
@@ -41,6 +43,7 @@ const EmojiImage = styled.img`
 `;
 
 const MessageContainer = styled.div`
+  background-image: url("/profile/background-img.png");
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -62,6 +65,15 @@ const Message = styled.div`
 
 export default function ConversationComponent({profilePic, name}) {
 
+    const [messages, setMessages] = useState(messagesList);
+
+    function addEmoji(event) {
+        event.preventDefault();
+        const msgList = [...messages, {id: 7, messageType: "TEXT", text: "Test", senderID: 1, addedOn: "12:00 PM"}];
+        setMessages(msgList);
+        event.target.reset();
+    }
+
     return (
         <Container>
             <ProfileHeader>
@@ -69,7 +81,7 @@ export default function ConversationComponent({profilePic, name}) {
                 {name}
             </ProfileHeader>
             <MessageContainer>
-                {messagesList.map((messageData) => (
+                {messages.map((messageData) => (
                     <MessageDiv isYours={messageData.senderID === 0}>
                         <Message isYours={messageData.senderID === 0}>{messageData.text}</Message>
                     </MessageDiv>
@@ -77,7 +89,7 @@ export default function ConversationComponent({profilePic, name}) {
             </MessageContainer>
             <ChatBox>
                 <SearchContainer>
-                    <EmojiImage src={"/profile/data.svg"}/>
+                    <EmojiImage src={"/profile/data.svg"} onClick={addEmoji}/>
                     <SearchInput placeholder="Type a message"/>
                 </SearchContainer>
             </ChatBox>

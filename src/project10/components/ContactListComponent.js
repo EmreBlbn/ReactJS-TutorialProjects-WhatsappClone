@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import {contactList} from "../Data";
+import {MdGroups} from "react-icons/md";
+import {TbCircleDashed} from "react-icons/tb";
+import {BiMessageAltDetail} from "react-icons/bi";
+import {BsThreeDotsVertical} from "react-icons/bs";
 
 const Container = styled.div`
   display: flex;
@@ -33,7 +37,7 @@ export const SearchContainer = styled.div`
   background: white;
   border-radius: 16px;
   width: 100%;
-  padding: 20px 0;
+  padding: 5px 0;
 `;
 
 const SearchIcon = styled.img`
@@ -59,6 +63,9 @@ const ContactItem = styled.div`
   background: white;
   cursor: pointer;
   padding: 15px;
+  &:hover{
+    background: lightgray;
+  }
 `;
 
 const ProfileIcon = styled(ProfileImage)`
@@ -100,11 +107,56 @@ function ContactComponent({userData, onclick}) {
     );
 }
 
+const ProfileSymbolContainer = styled.div`
+  width: 100%;
+  justify-content: flex-end;
+  display: flex;
+  margin: 5px 16px;
+`;
+
+const ProfileSymbolSpan = styled.span`
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 7px 10px;
+  position: absolute;
+  z-index: 1;
+  margin-top: 30px;
+`;
+
+const ProfileSymbolDiv = styled.div`
+  display: flex;
+  padding-left: 20px;
+  &:hover ${ProfileSymbolSpan} {
+    visibility: visible;
+  }
+`;
+
 export default function ContactListComponent({onclick}) {
     return (
         <Container>
             <ProfileInfoDiv>
                 <ProfileImage src="/profile/Cockatiel-2.jpg"/>
+                <ProfileSymbolContainer>
+                    <ProfileSymbolDiv>
+                        <MdGroups size={30}/>
+                        <ProfileSymbolSpan>Groups</ProfileSymbolSpan>
+                    </ProfileSymbolDiv>
+                    <ProfileSymbolDiv>
+                        <TbCircleDashed size={30}/>
+                        <ProfileSymbolSpan>Status</ProfileSymbolSpan>
+                    </ProfileSymbolDiv>
+                    <ProfileSymbolDiv>
+                        <BiMessageAltDetail size={30}/>
+                        <ProfileSymbolSpan>New Chat</ProfileSymbolSpan>
+                    </ProfileSymbolDiv>
+                    <ProfileSymbolDiv>
+                        <BsThreeDotsVertical size={30}/>
+                        <ProfileSymbolSpan>Menu</ProfileSymbolSpan>
+                    </ProfileSymbolDiv>
+                </ProfileSymbolContainer>
             </ProfileInfoDiv>
             <SearchBox>
                 <SearchContainer>

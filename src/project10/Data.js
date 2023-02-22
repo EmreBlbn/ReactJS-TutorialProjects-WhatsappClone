@@ -1,4 +1,4 @@
-export const contactList = [
+export let contactList = [
     {
         id: 1,
         name: "Emre Balaban",
@@ -28,7 +28,7 @@ export const contactList = [
         lastTextTime: "21:43",
     },
 ];
-export const messagesList = [
+export let messagesList = [
     {
         id: 1,
         messageType: "TEXT",
@@ -65,7 +65,7 @@ export const messagesList = [
         addedOn: "12:00 PM",
     },
     {
-        id: 5,
+        id: 6,
         messageType: "TEXT",
         text: "Subscribed to Simplilarn",
         senderID: 1,
