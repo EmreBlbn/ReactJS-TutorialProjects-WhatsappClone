@@ -2,7 +2,7 @@ import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
 import {useState} from "react";
 
-const Container = styled.div`
+export const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;

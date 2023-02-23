@@ -2,6 +2,7 @@ import styled from "styled-components";
 import ContactListComponent from "./components/ContactListComponent";
 import ConversationComponent from "./components/ConversationComponent";
 import {useState} from "react";
+import WelcomeComponent from "./components/WelcomeComponent";
 
 const Container = styled.div`
   display: flex;
@@ -13,7 +14,7 @@ const Container = styled.div`
 
 export default function WhatsappApp() {
 
-    const [id, setId] = useState(1);
+    const [id, setId] = useState(0);
 
     const [contactList, setContactList] = useState([]);
 
@@ -33,6 +34,7 @@ export default function WhatsappApp() {
         <Container>
             <ContactListComponent onclick={onClick}/>
             {contactList.length === 0 ? <></> :
+                id === 0 ? <WelcomeComponent/> :
                 <ConversationComponent profilePic={contactList[id - 1].profilePic} name={contactList[id - 1].name}
                                        fileName={`messages${id}.json`}/>}
         </Container>
