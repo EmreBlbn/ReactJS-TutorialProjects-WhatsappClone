@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Emre Balaban",
+    "profilePic": "/profile/Cockatiel-2.jpg",
+    "lastText": "Hey Man",
+    "lastTextTime": "12:58"
+  },
+  {
+    "id": 2,
+    "name": "Person1",
+    "profilePic": "/profile/pp1.png",
+    "lastText": "what going on bro",
+    "lastTextTime": "12:45"
+  },
+  {
+    "id": 3,
+    "name": "Person2",
+    "profilePic": "/profile/pp2.png",
+    "lastText": "baba lets go out?",
+    "lastTextTime": "12:30"
+  },
+  {
+    "id": 4,
+    "name": "Person3",
+    "profilePic": "/profile/pp3.jpeg",
+    "lastText": "no broo",
+    "lastTextTime": "21:43"
+  }
+]

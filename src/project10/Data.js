@@ -67,7 +67,7 @@ export let messagesList = [
     {
         id: 6,
         messageType: "TEXT",
-        text: "Subscribed to Simplilarn",
+        text: "Subscribed to Simplilearn",
         senderID: 1,
         addedOn: "12:00 PM",
     },

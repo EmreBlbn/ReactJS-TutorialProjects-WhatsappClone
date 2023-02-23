@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import {contactList} from "../Data";
 import {MdGroups} from "react-icons/md";
 import {TbCircleDashed} from "react-icons/tb";
 import {BiMessageAltDetail} from "react-icons/bi";
 import {BsThreeDotsVertical} from "react-icons/bs";
+import {useState} from "react";
 
 const Container = styled.div`
   display: flex;
@@ -63,7 +63,8 @@ const ContactItem = styled.div`
   background: white;
   cursor: pointer;
   padding: 15px;
-  &:hover{
+
+  &:hover {
     background: lightgray;
   }
 `;
@@ -129,12 +130,23 @@ const ProfileSymbolSpan = styled.span`
 const ProfileSymbolDiv = styled.div`
   display: flex;
   padding-left: 20px;
+
   &:hover ${ProfileSymbolSpan} {
     visibility: visible;
   }
 `;
 
 export default function ContactListComponent({onclick}) {
+
+    const [contactList, setContactList] = useState([]);
+
+    fetch("./data/contactList.json")
+        .then(function (response) {
+            return response.json();
+        }).then(function (data) {
+        setContactList(data);
+    });
+
     return (
         <Container>
             <ProfileInfoDiv>

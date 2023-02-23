@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
-import {messagesList} from "../Data";
 import {useState} from "react";
 
 const Container = styled.div`
@@ -9,6 +8,7 @@ const Container = styled.div`
   height: 100%;
   flex: 2;
   background: #f6f7f8;
+  border-left: 1px solid rgba(0, 0, 0, 0.6) !important;
 `;
 
 const ProfileHeader = styled.div`
@@ -46,7 +46,7 @@ const MessageContainer = styled.div`
   background-image: url("/profile/background-img.png");
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 85%;
 `;
 
 const MessageDiv = styled.div`
@@ -63,15 +63,41 @@ const Message = styled.div`
   font-size: 19px;
 `;
 
-export default function ConversationComponent({profilePic, name}) {
 
-    const [messages, setMessages] = useState(messagesList);
+const SearchForm = styled.form`
+  width: 100%;
+`;
+
+export default function ConversationComponent({profilePic, name, fileName}) {
+
+    const [messages, setMessages] = useState([]);
+
+    fetch("./data/" + fileName)
+        .then(function (response) {
+            return response.json();
+        }).then(function (data) {
+        setMessages(data);
+    });
 
     function addEmoji(event) {
         event.preventDefault();
-        const msgList = [...messages, {id: 7, messageType: "TEXT", text: "Test", senderID: 1, addedOn: "12:00 PM"}];
+        event.target.parentNode.children[1].item.value += "😁"
+        console.log(event.target.parentNode.children[1].item.value);
+    }
+
+    function submitMessage(event) {
+        event.preventDefault();
+        const form = event.target;
+        const input = form.item;
+        const msgList = [...messages, {
+            id: 7,
+            messageType: "TEXT",
+            text: input.value,
+            senderID: 0,
+            addedOn: "12:00 PM"
+        }];
         setMessages(msgList);
-        event.target.reset();
+        form.reset();
     }
 
     return (
@@ -90,7 +116,12 @@ export default function ConversationComponent({profilePic, name}) {
             <ChatBox>
                 <SearchContainer>
                     <EmojiImage src={"/profile/data.svg"} onClick={addEmoji}/>
-                    <SearchInput placeholder="Type a message"/>
+                    <SearchForm onSubmit={submitMessage}>
+                        <SearchInput type="text"
+                                     name="item"
+                                     required={true}
+                                     placeholder="Type a message"/>
+                    </SearchForm>
                 </SearchContainer>
             </ChatBox>
         </Container>
