@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export const Container = styled.div`
   display: flex;
@@ -68,16 +68,32 @@ const SearchForm = styled.form`
   width: 100%;
 `;
 
-export default function ConversationComponent({profilePic, name, fileName}) {
+export default function ConversationComponent({profilePic, name, id}) {
 
-    const [messages, setMessages] = useState([]);
+    const [allMessages, setAllMessages] = useState([]);
+    const [messages, setMessages] = useState(getMessages(id));
 
-    fetch("./data/" + fileName)
-        .then(function (response) {
-            return response.json();
-        }).then(function (data) {
-        setMessages(data);
-    });
+    useEffect(() => {
+        getAllMessages();
+    }, [getAllMessages]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    function getAllMessages() {
+        fetch('http://localhost:3002/messages')
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                setAllMessages(data);
+                setMessages(getMessages());
+            })
+    }
+
+    function getMessages() {
+        return allMessages.filter((message) =>{
+            return parseInt(message.senderid) === id || parseInt(message.receiverid) === id;
+        })
+    }
 
     function addEmoji(event) {
         event.preventDefault();
@@ -108,8 +124,8 @@ export default function ConversationComponent({profilePic, name, fileName}) {
             </ProfileHeader>
             <MessageContainer>
                 {messages.map((messageData) => (
-                    <MessageDiv isYours={messageData.senderID === 0}>
-                        <Message isYours={messageData.senderID === 0}>{messageData.text}</Message>
+                    <MessageDiv isYours={parseInt(messageData.senderid)=== 0}>
+                        <Message isYours={parseInt(messageData.senderid) === 0}>{messageData.msg}</Message>
                     </MessageDiv>
                 ))}
             </MessageContainer>

@@ -3,7 +3,7 @@ import {MdGroups} from "react-icons/md";
 import {TbCircleDashed} from "react-icons/tb";
 import {BiMessageAltDetail} from "react-icons/bi";
 import {BsThreeDotsVertical} from "react-icons/bs";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const Container = styled.div`
   display: flex;
@@ -97,13 +97,13 @@ const MessageText = styled.span`
 
 function ContactComponent({userData, onclick}) {
     return (
-        <ContactItem onClick={() => onclick(userData.id)}>
-            <ProfileIcon src={userData.profilePic}/>
+        <ContactItem onClick={() => onclick(parseInt(userData.userid))}>
+            <ProfileIcon src={userData.profilepic}/>
             <ContactInfo>
-                <ContactName>{userData.name}</ContactName>
-                <MessageText>{userData.lastText}</MessageText>
+                <ContactName>{userData.username}</ContactName>
+                <MessageText>{userData.lasttext}</MessageText>
             </ContactInfo>
-            <MessageText>{userData.lastTextTime}</MessageText>
+            <MessageText>{userData.lasttexttime}</MessageText>
         </ContactItem>
     );
 }
@@ -138,14 +138,21 @@ const ProfileSymbolDiv = styled.div`
 
 export default function ContactListComponent({onclick}) {
 
-    const [contactList, setContactList] = useState([]);
+    const [users, setUsers] = useState([]);
 
-    fetch("./data/contactList.json")
-        .then(function (response) {
-            return response.json();
-        }).then(function (data) {
-        setContactList(data);
-    });
+    useEffect(() => {
+        getUsers();
+    }, []);
+
+    function getUsers() {
+        fetch('http://localhost:3002/users')
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                setUsers(data);
+            })
+    }
 
     return (
         <Container>
@@ -176,8 +183,7 @@ export default function ContactListComponent({onclick}) {
                     <SearchInput placeholder="Search or start new chat"/>
                 </SearchContainer>
             </SearchBox>
-            {contactList.map((userData) => <ContactComponent userData={userData} onclick={onclick}/>)}
-
+            {users.map((userData) => <ContactComponent userData={userData} onclick={onclick}/>)}
         </Container>
     );
 }

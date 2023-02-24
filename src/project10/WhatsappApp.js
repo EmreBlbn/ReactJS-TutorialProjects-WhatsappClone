@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ContactListComponent from "./components/ContactListComponent";
 import ConversationComponent from "./components/ConversationComponent";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import WelcomeComponent from "./components/WelcomeComponent";
 
 const Container = styled.div`
@@ -16,15 +16,21 @@ export default function WhatsappApp() {
 
     const [id, setId] = useState(0);
 
-    const [contactList, setContactList] = useState([]);
+    const [users, setUsers] = useState([]);
 
-    fetch("./data/contactList.json")
-        .then(function (response) {
-            return response.json();
-        }).then(function (data) {
-        console.log(data);
-        setContactList(data);
-    })
+    useEffect(() => {
+        getUsers();
+    }, []);
+
+    function getUsers() {
+        fetch('http://localhost:3002/users')
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                setUsers(data);
+            })
+    }
 
     function onClick(newID) {
         setId(newID);
@@ -33,10 +39,10 @@ export default function WhatsappApp() {
     return (
         <Container>
             <ContactListComponent onclick={onClick}/>
-            {contactList.length === 0 ? <></> :
+            {users.length === 0 ? <></> :
                 id === 0 ? <WelcomeComponent/> :
-                <ConversationComponent profilePic={contactList[id - 1].profilePic} name={contactList[id - 1].name}
-                                       fileName={`messages${id}.json`}/>}
+                <ConversationComponent profilePic={users[id - 1].profilepic} name={users[id - 1].username}
+                                       id={id}/>}
         </Container>
     );
 }
