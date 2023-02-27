@@ -33,15 +33,15 @@ app.get('/messages', (req, res) => {
         })
 })
 
-// app.post('/users', (req, res) => {
-//     backend.createMerchant(req.body)
-//         .then(response => {
-//             res.status(200).send(response);
-//         })
-//         .catch(error => {
-//             res.status(500).send(error);
-//         })
-// })
+app.post('/messages', (req, res) => {
+    backend.createMessage(req.body)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
 //
 // app.delete('/users/:id', (req, res) => {
 //     backend.deleteMerchant(req.params.id)

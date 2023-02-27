@@ -90,7 +90,7 @@ export default function ConversationComponent({profilePic, name, id}) {
     }
 
     function getMessages() {
-        return allMessages.filter((message) =>{
+        return allMessages.filter((message) => {
             return parseInt(message.senderid) === id || parseInt(message.receiverid) === id;
         })
     }
@@ -98,21 +98,30 @@ export default function ConversationComponent({profilePic, name, id}) {
     function addEmoji(event) {
         event.preventDefault();
         event.target.parentNode.children[1].item.value += "😁"
-        console.log(event.target.parentNode.children[1].item.value);
     }
 
     function submitMessage(event) {
         event.preventDefault();
         const form = event.target;
         const input = form.item;
-        const msgList = [...messages, {
-            id: 7,
-            messageType: "TEXT",
-            text: input.value,
-            senderID: 0,
-            addedOn: "12:00 PM"
-        }];
-        setMessages(msgList);
+        const body = JSON.stringify({
+            msgid: `${allMessages.length + 1}`,
+            senderid: `0`,
+            receiverid: `${id}`,
+            msg: input.value,
+            senttime: `${new Date().getHours()}`
+        });
+        console.log(body)
+        fetch('http://localhost:3002/messages', {
+            method: 'POST',
+            body: body,
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8'
+            }
+        }).then(response => {
+            return response.json();
+        });
+        getAllMessages();
         form.reset();
     }
 
@@ -124,7 +133,7 @@ export default function ConversationComponent({profilePic, name, id}) {
             </ProfileHeader>
             <MessageContainer>
                 {messages.map((messageData) => (
-                    <MessageDiv isYours={parseInt(messageData.senderid)=== 0}>
+                    <MessageDiv isYours={parseInt(messageData.senderid) === 0}>
                         <Message isYours={parseInt(messageData.senderid) === 0}>{messageData.msg}</Message>
                     </MessageDiv>
                 ))}

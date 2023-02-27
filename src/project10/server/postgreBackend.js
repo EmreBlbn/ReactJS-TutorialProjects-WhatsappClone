@@ -30,17 +30,18 @@ const getMessages = () => {
         })
     })
 }
-// const createMerchant = (body) => {
-//     return new Promise(function(resolve, reject) {
-//         const { name, email } = body
-//         pool.query('INSERT INTO merchants (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
-//             if (error) {
-//                 reject(error)
-//             }
-//             resolve(`A new merchant has been added added: ${results.rows[0]}`)
-//         })
-//     })
-// }
+const createMessage = (body) => {
+    return new Promise(function(resolve, reject) {
+        const { msgid, senderid, receiverid, msg, senttime } = body
+        console.log(`INSERT INTO messages VALUES ('${msgid}', '${senderid}', '${receiverid}', '${msg}', '${senttime}')`)
+        pool.query(`INSERT INTO messages VALUES ('${msgid}', '${senderid}', '${receiverid}', '${msg}', '${senttime}')`, (error, results) => {
+            if (error) {
+                reject(error)
+            }
+            resolve(`A new merchant has been added added: ${results.rows[0]}`)
+        })
+    })
+}
 // const deleteMerchant = () => {
 //     return new Promise(function(resolve, reject) {
 //         const id = parseInt(request.params.id)
@@ -55,7 +56,8 @@ const getMessages = () => {
 
 module.exports = {
     getUsers,
-    getMessages
+    getMessages,
+    createMessage
     // createMerchant,
     // deleteMerchant,
 }
