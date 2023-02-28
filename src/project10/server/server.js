@@ -3,7 +3,6 @@ const app = express()
 const port = 3002
 
 const backend = require('./postgreBackend')
-const {response} = require("express");
 
 app.use(express.json())
 app.use(function (req, res, next) {

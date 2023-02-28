@@ -68,9 +68,10 @@ const SearchForm = styled.form`
   width: 100%;
 `;
 
-export default function ConversationComponent({profilePic, name, id}) {
+export default function ConversationComponent({profilePic, name, id, userId}) {
 
     const [allMessages, setAllMessages] = useState([]);
+
     const [messages, setMessages] = useState(getMessages(id));
 
     useEffect(() => {
@@ -91,7 +92,9 @@ export default function ConversationComponent({profilePic, name, id}) {
 
     function getMessages() {
         return allMessages.filter((message) => {
-            return parseInt(message.senderid) === id || parseInt(message.receiverid) === id;
+            return (parseInt(message.senderid) === id || parseInt(message.receiverid) === id)
+                &&
+                (parseInt(message.senderid) === userId || parseInt(message.receiverid) === userId);
         })
     }
 
@@ -105,11 +108,11 @@ export default function ConversationComponent({profilePic, name, id}) {
         const form = event.target;
         const input = form.item;
         const body = JSON.stringify({
-            msgid: `${allMessages.length + 1}`,
-            senderid: `0`,
+            msgid: `${parseInt(allMessages[allMessages.length -1].msgid) + 1}`,
+            senderid: `${userId}`,
             receiverid: `${id}`,
             msg: input.value,
-            senttime: `${new Date().getHours()}`
+            senttime: `${new Date().getHours()}:${new Date().getMinutes()}`
         });
         console.log(body)
         fetch('http://localhost:3002/messages', {
@@ -133,8 +136,8 @@ export default function ConversationComponent({profilePic, name, id}) {
             </ProfileHeader>
             <MessageContainer>
                 {messages.map((messageData) => (
-                    <MessageDiv isYours={parseInt(messageData.senderid) === 0}>
-                        <Message isYours={parseInt(messageData.senderid) === 0}>{messageData.msg}</Message>
+                    <MessageDiv isYours={parseInt(messageData.senderid) === userId}>
+                        <Message isYours={parseInt(messageData.senderid) === userId}>{messageData.msg}</Message>
                     </MessageDiv>
                 ))}
             </MessageContainer>

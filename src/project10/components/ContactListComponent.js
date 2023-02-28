@@ -95,15 +95,51 @@ const MessageText = styled.span`
 `;
 
 
-function ContactComponent({userData, onclick}) {
+function ContactComponent({userData, onclick, userId}) {
+
+    const [allMessages, setAllMessages] = useState([]);
+
+    const [messages, setMessages] = useState(getMessages(userId));
+
+    const [lastText, setLastText] = useState('');
+
+    const [lastTextTime, setLastTextTime] = useState('');
+
+    useEffect(() => {
+        getAllMessages();
+    }, [getAllMessages]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    function getAllMessages() {
+        fetch('http://localhost:3002/messages')
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                setAllMessages(data);
+                setMessages(getMessages(parseInt(userData.userid)));
+                console.log(messages.length);
+                setLastText(messages[messages.length - 1].msg);
+                setLastTextTime(messages[messages.length-1].senttime);
+            })
+    }
+
+    function getMessages(id) {
+        return allMessages.filter((message) => {
+            return (parseInt(message.senderid) === id || parseInt(message.receiverid) === id)
+                &&
+                (parseInt(message.senderid) === userId || parseInt(message.receiverid) === userId);
+        })
+    }
+
     return (
         <ContactItem onClick={() => onclick(parseInt(userData.userid))}>
             <ProfileIcon src={userData.profilepic}/>
             <ContactInfo>
                 <ContactName>{userData.username}</ContactName>
-                <MessageText>{userData.lasttext}</MessageText>
+                <MessageText>{lastText}</MessageText>
             </ContactInfo>
-            <MessageText>{userData.lasttexttime}</MessageText>
+            <MessageText>{lastTextTime}</MessageText>
         </ContactItem>
     );
 }
@@ -136,7 +172,7 @@ const ProfileSymbolDiv = styled.div`
   }
 `;
 
-export default function ContactListComponent({onclick}) {
+export default function ContactListComponent({onclick, profilePhoto, userId}) {
 
     const [users, setUsers] = useState([]);
 
@@ -157,7 +193,7 @@ export default function ContactListComponent({onclick}) {
     return (
         <Container>
             <ProfileInfoDiv>
-                <ProfileImage src="/profile/Cockatiel-2.jpg"/>
+                <ProfileImage src={profilePhoto}/>
                 <ProfileSymbolContainer>
                     <ProfileSymbolDiv>
                         <MdGroups size={30}/>
@@ -183,7 +219,10 @@ export default function ContactListComponent({onclick}) {
                     <SearchInput placeholder="Search or start new chat"/>
                 </SearchContainer>
             </SearchBox>
-            {users.map((userData) => <ContactComponent userData={userData} onclick={onclick}/>)}
+            {users.map((userData) =>
+                parseInt(userData.userid) !== userId && (
+                    <ContactComponent userData={userData} onclick={onclick} userId={userId}/>)
+            )}
         </Container>
     );
 }
