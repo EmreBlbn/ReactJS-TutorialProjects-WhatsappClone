@@ -2,6 +2,11 @@ import styled from "styled-components";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
+const Airtable = require('airtable');
+const base = new Airtable(
+    {apiKey: 'patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725'})
+    .base('appx04aPv2fM0sc3A');
+
 const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -59,13 +64,15 @@ export default function Login({selectUser}) {
     }, []);
 
     function getUsers() {
-        fetch('http://localhost:3002/users')
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                setUsers(data);
-            })
+        base('USERS').select({
+            view: "Grid view",
+            maxRecords: 5
+        }).eachPage(function page(records, processNextPage) {
+            setUsers(records)
+            processNextPage();
+        }, function done(error) {
+            if (error) console.log(error);
+        });
     }
 
     return (
@@ -73,11 +80,11 @@ export default function Login({selectUser}) {
             <LoginDiv>
                 {users.map((user) => (
                     <UserDiv onClick={() => {
-                        selectUser(parseInt(user.userid));
+                        selectUser(parseInt(user.get('userId')));
                         navigate('/');
                     }}>
-                        <UserPhoto src={user.profilepic}/>
-                        <UsernameSpan>{user.username}</UsernameSpan>
+                        <UserPhoto src={user.get('profilePic')}/>
+                        <UsernameSpan>{user.get('username')}</UsernameSpan>
                     </UserDiv>
                 ))}
 

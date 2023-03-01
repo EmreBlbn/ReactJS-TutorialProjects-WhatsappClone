@@ -6,6 +6,11 @@ import WelcomeComponent from "./components/WelcomeComponent";
 import {BrowserRouter as Router, NavLink, Route, Routes} from "react-router-dom";
 import Login from "./components/Login";
 
+const Airtable = require('airtable');
+const base = new Airtable(
+    {apiKey: 'patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725'})
+    .base('appx04aPv2fM0sc3A');
+
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -22,18 +27,25 @@ export default function WhatsappApp() {
 
     const [users, setUsers] = useState([]);
 
+    const [firstRender, setFirstRender] = useState(true);
+
     useEffect(() => {
-        getUsers();
-    }, []);
+        if (firstRender){
+            getUsers();
+            setFirstRender(false) ;
+        }
+    }, [firstRender]);
 
     function getUsers() {
-        fetch('http://localhost:3002/users')
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                setUsers(data);
-            })
+        base('USERS').select({
+            view: "Grid view",
+            maxRecords: 5
+        }).eachPage(function page(records, processNextPage) {
+            setUsers(records)
+            processNextPage();
+        }, function done(err) {
+            if (err) console.log(err);
+        });
     }
 
     function onClick(newID) {
@@ -56,12 +68,12 @@ export default function WhatsappApp() {
                         </div>
                         :
                         <Container>
-                            <ContactListComponent onclick={onClick} profilePhoto={users[userId].profilepic}
+                            <ContactListComponent onclick={onClick} profilePhoto={users[userId].get('profilePic')}
                                                   userId={userId}/>
                             {users.length === 0 ? <></> :
                                 id === -1 ? <WelcomeComponent/> :
-                                    <ConversationComponent profilePic={users[id].profilepic}
-                                                           name={users[id].username}
+                                    <ConversationComponent profilePic={users[id].get('profilePic')}
+                                                           name={users[id].get('username')}
                                                            id={id} userId={userId}/>}
                         </Container>
                 }

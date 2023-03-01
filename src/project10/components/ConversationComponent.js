@@ -2,6 +2,11 @@ import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
 import {useEffect, useState} from "react";
 
+const Airtable = require('airtable');
+const base = new Airtable(
+    {apiKey: 'patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725'})
+    .base('appx04aPv2fM0sc3A');
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -80,21 +85,24 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
-        fetch('http://localhost:3002/messages')
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                setAllMessages(data);
-                setMessages(getMessages());
-            })
+        base('MESSAGES').select({
+            view: "Grid view",
+            maxRecords: 50
+        }).eachPage(function page(records, processNextPage) {
+            setAllMessages(records);
+            setMessages(getMessages());
+            console.log(messages);
+            // processNextPage();
+        }, function done(error) {
+            if (error) console.log(error);
+        });
     }
 
     function getMessages() {
         return allMessages.filter((message) => {
-            return (parseInt(message.senderid) === id || parseInt(message.receiverid) === id)
+            return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
                 &&
-                (parseInt(message.senderid) === userId || parseInt(message.receiverid) === userId);
+                (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
         })
     }
 
@@ -114,7 +122,6 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
             msg: input.value,
             senttime: `${new Date().getHours()}:${new Date().getMinutes()}`
         });
-        console.log(body)
         fetch('http://localhost:3002/messages', {
             method: 'POST',
             body: body,
@@ -136,8 +143,8 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
             </ProfileHeader>
             <MessageContainer>
                 {messages.map((messageData) => (
-                    <MessageDiv isYours={parseInt(messageData.senderid) === userId}>
-                        <Message isYours={parseInt(messageData.senderid) === userId}>{messageData.msg}</Message>
+                    <MessageDiv isYours={parseInt(messageData.get('senderId')) === userId}>
+                        <Message isYours={parseInt(messageData.get('senderId')) === userId}>{messageData.get('msg')}</Message>
                     </MessageDiv>
                 ))}
             </MessageContainer>
