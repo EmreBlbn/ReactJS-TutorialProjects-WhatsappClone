@@ -39,7 +39,7 @@ export default function WhatsappApp() {
     function getUsers() {
         base('USERS').select({
             view: "Grid view",
-            maxRecords: 5
+            maxRecords: 6
         }).eachPage(function page(records, processNextPage) {
             setUsers(records)
             processNextPage();

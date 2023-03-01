@@ -192,7 +192,7 @@ export default function ContactListComponent({onclick, profilePhoto, userId}) {
     function getUsers() {
         base('USERS').select({
             view: "Grid view",
-            maxRecords: 5
+            maxRecords: 6
         }).eachPage(function page(records, processNextPage) {
             setUsers(records)
             processNextPage();
