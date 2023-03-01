@@ -91,7 +91,6 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         }).eachPage(function page(records, processNextPage) {
             setAllMessages(records);
             setMessages(getMessages());
-            console.log(messages);
             // processNextPage();
         }, function done(error) {
             if (error) console.log(error);
@@ -115,23 +114,26 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         event.preventDefault();
         const form = event.target;
         const input = form.item;
-        const body = JSON.stringify({
-            msgid: `${parseInt(allMessages[allMessages.length -1].msgid) + 1}`,
-            senderid: `${userId}`,
-            receiverid: `${id}`,
-            msg: input.value,
-            senttime: `${new Date().getHours()}:${new Date().getMinutes()}`
-        });
-        fetch('http://localhost:3002/messages', {
-            method: 'POST',
-            body: body,
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8'
+
+        base('MESSAGES').create([
+            {
+                "fields": {
+                    "msgId": parseInt(allMessages[allMessages.length - 1].get('msgId')) + 1,
+                    "senderId": parseInt(userId),
+                    "receiverId": parseInt(id),
+                    "msg": input.value,
+                    "sentTime": `${new Date().getHours()}:${new Date().getMinutes()}`
+                }
             }
-        }).then(response => {
-            return response.json();
+        ], function (error, records) {
+            if (error) {
+                console.error(error);
+                return;
+            }
+            records.forEach(function (record) {
+                console.log(record.getId())
+            });
         });
-        getAllMessages();
         form.reset();
     }
 
@@ -144,7 +146,8 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
             <MessageContainer>
                 {messages.map((messageData) => (
                     <MessageDiv isYours={parseInt(messageData.get('senderId')) === userId}>
-                        <Message isYours={parseInt(messageData.get('senderId')) === userId}>{messageData.get('msg')}</Message>
+                        <Message
+                            isYours={parseInt(messageData.get('senderId')) === userId}>{messageData.get('msg')}</Message>
                     </MessageDiv>
                 ))}
             </MessageContainer>
