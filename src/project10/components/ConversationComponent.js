@@ -140,10 +140,9 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         base('MESSAGES').select({
             view: "Grid view",
             maxRecords: 50
-        }).eachPage(function page(records, processNextPage) {
+        }).eachPage(function page(records) {
             setAllMessages(records);
             setMessages(getMessages());
-            // processNextPage();
         }, function done(error) {
             if (error) console.log(error);
         });
