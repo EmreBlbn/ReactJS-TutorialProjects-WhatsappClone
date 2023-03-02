@@ -60,13 +60,65 @@ const MessageDiv = styled.div`
   margin: 5px 16px;
 `;
 
-const Message = styled.div`
-  background: ${(props) => (props.isYours ? '#daf8cb' : 'white')};
+const MessageRight = styled.div`
+  margin-right: 10px;
+  background: #daf8cb;
   max-width: 50%;
   color: #303030;
   padding: 8px 10px;
   font-size: 19px;
+  border-radius: .4em;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 20px solid transparent;
+    border-left-color: #daf8cb;
+    border-bottom: 0;
+    border-right: 0;
+    margin-top: -10px;
+    margin-right: -20px;
+  }
 `;
+
+const MessageLeft = styled.div`
+  margin-left: 10px;
+  background: white;
+  max-width: 50%;
+  color: #303030;
+  padding: 8px 10px;
+  font-size: 19px;
+  border-radius: .4em;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 20px solid transparent;
+    border-right-color: white;
+    border-bottom: 0;
+    border-left: 0;
+    margin-top: -10px;
+    margin-left: -20px;
+  }
+`
+
+const MessageTime = styled.div`
+  width: 100%;
+  justify-content: flex-end;
+  display: flex;
+  margin-top: 3px;
+  font-size: 9px;
+`
 
 
 const SearchForm = styled.form`
@@ -146,8 +198,19 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
             <MessageContainer>
                 {messages.map((messageData) => (
                     <MessageDiv isYours={parseInt(messageData.get('senderId')) === userId}>
-                        <Message
-                            isYours={parseInt(messageData.get('senderId')) === userId}>{messageData.get('msg')}</Message>
+                        {parseInt(messageData.get('senderId')) === userId ?
+                            <MessageRight>
+                                {messageData.get('msg')}
+                                <MessageTime>{messageData.get('sentTime')}</MessageTime>
+                            </MessageRight>
+                            :
+                            <MessageLeft>
+                                {messageData.get('msg')}
+                                <MessageTime>{messageData.get('sentTime')}</MessageTime>
+                            </MessageLeft>
+                        }
+
+
                     </MessageDiv>
                 ))}
             </MessageContainer>
