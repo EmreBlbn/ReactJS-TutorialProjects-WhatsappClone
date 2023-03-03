@@ -118,8 +118,7 @@ function ContactComponent({userData, onclick, userId}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
         base('MESSAGES').select({
-            view: "Grid view",
-            maxRecords: 50
+            view: "Grid view"
         }).eachPage(function page(records, processNextPage) {
             setAllMessages(records);
             setMessages(getMessages(parseInt(userData.get('userId'))));
@@ -127,7 +126,7 @@ function ContactComponent({userData, onclick, userId}) {
                 setLastText(messages[messages.length - 1].get('msg'));
                 setLastTextTime(messages[messages.length - 1].get('sentTime'));
             }
-            // processNextPage();
+            processNextPage();
         }, function done(error) {
             if (error) console.log(error);
         });

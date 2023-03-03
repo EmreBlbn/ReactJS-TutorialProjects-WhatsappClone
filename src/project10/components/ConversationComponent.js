@@ -138,8 +138,7 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
         base('MESSAGES').select({
-            view: "Grid view",
-            maxRecords: 50
+            view: "Grid view"
         }).eachPage(function page(records) {
             setAllMessages(records);
             setMessages(getMessages());
