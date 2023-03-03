@@ -139,9 +139,10 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
     function getAllMessages() {
         base('MESSAGES').select({
             view: "Grid view"
-        }).eachPage(function page(records) {
+        }).eachPage(function page(records, processNextPage) {
             setAllMessages(records);
             setMessages(getMessages());
+            processNextPage()
         }, function done(error) {
             if (error) console.log(error);
         });
