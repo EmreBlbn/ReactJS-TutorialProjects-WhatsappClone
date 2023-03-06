@@ -139,6 +139,18 @@ const EmojiDiv = styled.div`
   bottom: 0;
 `;
 
+const DoubleTick = styled.img`
+  justify-content: flex-end;
+  width: 15px;
+  height: 15px;
+  padding-left: 5px;
+`;
+
+const Test = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 export default function ConversationComponent({profilePic, name, id, userId}) {
 
     const [allMessages, setAllMessages] = useState([]);
@@ -147,9 +159,14 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
 
     const [emojiVisibility, setEmojiVisibility] = useState(false);
 
+    const [fetched, setFetched] = useState(false);
+
     useEffect(() => {
+        // if (!fetched) {
+        //     getAllMessages();
+        // }
         getAllMessages();
-    }, [getAllMessages]);
+    }, [fetched, getAllMessages]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
@@ -158,7 +175,12 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         }).eachPage(function page(records, processNextPage) {
             setAllMessages(records);
             setMessages(getMessages());
-            processNextPage()
+            if (messages.length !== 0) {
+                console.log(messages);
+                setFetched(true);
+            }
+
+            processNextPage();
         }, function done(error) {
             if (error) console.log(error);
         });
@@ -195,7 +217,8 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                     "senderId": parseInt(userId),
                     "receiverId": parseInt(id),
                     "msg": input.value,
-                    "sentTime": `${new Date().getHours()}:${new Date().getMinutes()}`
+                    "sentTime": `${new Date().getHours()}:${new Date().getMinutes()}`,
+                    "readed": false
                 }
             }
         ], function (error, records) {
@@ -222,7 +245,12 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                         {parseInt(messageData.get('senderId')) === userId ?
                             <MessageRight>
                                 {messageData.get('msg')}
-                                <MessageTime>{messageData.get('sentTime')}</MessageTime>
+                                <Test>
+                                    <MessageTime>{messageData.get('sentTime')}</MessageTime>
+                                    <DoubleTick
+                                        src={messageData.get('readed') ? "/profile/readedDoubleTick.png" : "/profile/notReadedDoubleTick.png"}
+                                        alt="double tick"/>
+                                </Test>
                             </MessageRight>
                             :
                             <MessageLeft>
