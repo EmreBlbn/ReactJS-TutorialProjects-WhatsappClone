@@ -3,7 +3,7 @@ import ContactListComponent from "./components/ContactListComponent";
 import ConversationComponent from "./components/ConversationComponent";
 import {useEffect, useState} from "react";
 import WelcomeComponent from "./components/WelcomeComponent";
-import {BrowserRouter as Router, NavLink, Route, Routes} from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Login from "./components/Login";
 
 const Airtable = require('airtable');
@@ -30,16 +30,15 @@ export default function WhatsappApp() {
     const [firstRender, setFirstRender] = useState(true);
 
     useEffect(() => {
-        if (firstRender){
+        if (firstRender) {
             getUsers();
-            setFirstRender(false) ;
+            setFirstRender(false);
         }
     }, [firstRender]);
 
     function getUsers() {
         base('USERS').select({
-            view: "Grid view",
-            maxRecords: 6
+            view: "Grid view"
         }).eachPage(function page(records, processNextPage) {
             setUsers(records)
             processNextPage();
@@ -59,13 +58,10 @@ export default function WhatsappApp() {
     return (
         <Router>
             <Routes>
-                <Route path="/login" element={<Login selectUser={selectUser}/>}/>
                 <Route path="/" element={
                     userId === -1
                         ?
-                        <div>
-                            <NavLink to="/login">Click to Login</NavLink>
-                        </div>
+                        <Login selectUser={selectUser}/>
                         :
                         <Container>
                             <ContactListComponent onclick={onClick} profilePhoto={users[userId].get('profilePic')}

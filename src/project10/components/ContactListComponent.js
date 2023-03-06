@@ -190,8 +190,7 @@ export default function ContactListComponent({onclick, profilePhoto, userId}) {
 
     function getUsers() {
         base('USERS').select({
-            view: "Grid view",
-            maxRecords: 6
+            view: "Grid view"
         }).eachPage(function page(records, processNextPage) {
             setUsers(records)
             processNextPage();

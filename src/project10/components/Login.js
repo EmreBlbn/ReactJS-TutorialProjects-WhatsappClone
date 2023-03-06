@@ -65,10 +65,9 @@ export default function Login({selectUser}) {
 
     function getUsers() {
         base('USERS').select({
-            view: "Grid view",
-            maxRecords: 6
+            view: "Grid view"
         }).eachPage(function page(records, processNextPage) {
-            setUsers(records)
+            setUsers(records);
             processNextPage();
         }, function done(error) {
             if (error) console.log(error);
