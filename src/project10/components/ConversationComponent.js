@@ -162,11 +162,13 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
     const [fetched, setFetched] = useState(false);
 
     useEffect(() => {
-        // if (!fetched) {
-        //     getAllMessages();
-        // }
-        getAllMessages();
-    }, [fetched, getAllMessages]);
+        if (!fetched) {
+            getAllMessages();
+        }
+        if (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id || parseInt(messages[0].get('receiverId')) !== id)){
+            setMessages(getMessages);
+        }
+    }, [fetched, getAllMessages, getMessages, id, messages]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
@@ -186,6 +188,7 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         });
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     function getMessages() {
         return allMessages.filter((message) => {
             return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
