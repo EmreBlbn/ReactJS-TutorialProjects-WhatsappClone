@@ -47,6 +47,12 @@ const EmojiImage = styled.img`
   cursor: pointer;
 `;
 
+const EmojiImageButton = styled(EmojiImage)`
+  width: 40px;
+  height: 40px;
+  opacity: 1;
+`
+
 const MessageContainer = styled.div`
   background-image: url("/profile/background-img.png");
   display: flex;
@@ -110,7 +116,7 @@ const MessageLeft = styled.div`
     margin-top: -10px;
     margin-left: -20px;
   }
-`
+`;
 
 const MessageTime = styled.div`
   width: 100%;
@@ -118,11 +124,19 @@ const MessageTime = styled.div`
   display: flex;
   margin-top: 3px;
   font-size: 9px;
-`
-
+`;
 
 const SearchForm = styled.form`
   width: 100%;
+`;
+
+const EmojiDiv = styled.div`
+  visibility: ${(props) => (props.visibility ? "visible" : "hidden")};
+  display: ${(props) => (props.visibility ? "flex" : "none")};
+  background: #ededed;
+  padding: 10px;
+  align-items: center;
+  bottom: 0;
 `;
 
 export default function ConversationComponent({profilePic, name, id, userId}) {
@@ -130,6 +144,8 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
     const [allMessages, setAllMessages] = useState([]);
 
     const [messages, setMessages] = useState(getMessages(id));
+
+    const [emojiVisibility, setEmojiVisibility] = useState(false);
 
     useEffect(() => {
         getAllMessages();
@@ -156,9 +172,15 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         })
     }
 
-    function addEmoji(event) {
+    function openEmojiDiv(event) {
         event.preventDefault();
-        event.target.parentNode.children[1].item.value += "😁"
+        setEmojiVisibility(!emojiVisibility);
+    }
+
+    function addEmoji(event, emoji) {
+        event.preventDefault();
+        event.target.parentNode.parentNode.children[3].children[0].children[1].item.value += emoji;
+        setEmojiVisibility(false);
     }
 
     function submitMessage(event) {
@@ -213,9 +235,17 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                     </MessageDiv>
                 ))}
             </MessageContainer>
+            <EmojiDiv visibility={emojiVisibility}>
+                <EmojiImageButton src={"/profile/smile.svg"} onClick={(event) => addEmoji(event, "😁")}/>
+                <EmojiImageButton src={"/profile/angry.svg"} onClick={(event) => addEmoji(event, "😡")}/>
+                <EmojiImageButton src={"/profile/crying.svg"} onClick={(event) => addEmoji(event, "😢")}/>
+                <EmojiImageButton src={"/profile/sunglasses.svg"} onClick={(event) => addEmoji(event, "😎")}/>
+                <EmojiImageButton src={"/profile/astonished.svg"} onClick={(event) => addEmoji(event, "😲")}/>
+                <EmojiImageButton src={"/profile/heart.svg"} onClick={(event) => addEmoji(event, "❤️")}/>
+            </EmojiDiv>
             <ChatBox>
                 <SearchContainer>
-                    <EmojiImage src={"/profile/data.svg"} onClick={addEmoji}/>
+                    <EmojiImage src={"/profile/data.svg"} onClick={openEmojiDiv}/>
                     <SearchForm onSubmit={submitMessage}>
                         <SearchInput type="text"
                                      name="item"
