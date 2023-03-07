@@ -146,7 +146,7 @@ const DoubleTick = styled.img`
   padding-left: 5px;
 `;
 
-const Test = styled.div`
+const DoubleTickDiv = styled.div`
   display: flex;
   flex-direction: row;
 `;
@@ -165,7 +165,7 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         if (!fetched) {
             getAllMessages();
         }
-        if (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id || parseInt(messages[0].get('receiverId')) !== id)){
+        if (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id || parseInt(messages[0].get('receiverId')) !== id)) {
             setMessages(getMessages);
         }
     }, [fetched, getAllMessages, getMessages, id, messages]);
@@ -178,7 +178,6 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
             setAllMessages(records);
             setMessages(getMessages());
             if (messages.length !== 0) {
-                console.log(messages);
                 setFetched(true);
             }
 
@@ -233,6 +232,7 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                 console.log(record.getId())
             });
         });
+        getAllMessages();
         form.reset();
     }
 
@@ -248,12 +248,12 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                         {parseInt(messageData.get('senderId')) === userId ?
                             <MessageRight>
                                 {messageData.get('msg')}
-                                <Test>
+                                <DoubleTickDiv>
                                     <MessageTime>{messageData.get('sentTime')}</MessageTime>
                                     <DoubleTick
                                         src={messageData.get('readed') ? "/profile/readedDoubleTick.png" : "/profile/notReadedDoubleTick.png"}
                                         alt="double tick"/>
-                                </Test>
+                                </DoubleTickDiv>
                             </MessageRight>
                             :
                             <MessageLeft>

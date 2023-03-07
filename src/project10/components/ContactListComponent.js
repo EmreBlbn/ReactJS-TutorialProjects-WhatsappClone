@@ -99,6 +99,16 @@ const MessageText = styled.span`
   color: rgba(0, 0, 0, 0.8);
 `;
 
+const LastMessageDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const DoubleTick = styled.img`
+  padding-top: 4px;
+  width: 15px;
+  height: 15px;
+`
 
 function ContactComponent({userData, onclick, userId}) {
 
@@ -145,7 +155,11 @@ function ContactComponent({userData, onclick, userId}) {
             <ProfileIcon src={userData.get('profilePic')}/>
             <ContactInfo>
                 <ContactName>{userData.get('username')}</ContactName>
-                <MessageText>{lastText}</MessageText>
+                <LastMessageDiv>
+                    <MessageText>{lastText}</MessageText>
+                    {messages.length !== 0 && parseInt(messages[messages.length - 1].get('senderId')) === userId ?
+                        <DoubleTick src={"/profile/readedDoubleTick.png"}/> : <></>}
+                </LastMessageDiv>
             </ContactInfo>
             <MessageText>{lastTextTime}</MessageText>
         </ContactItem>
