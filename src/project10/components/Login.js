@@ -1,11 +1,6 @@
 import styled from "styled-components";
-import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
-const Airtable = require('airtable');
-const base = new Airtable(
-    {apiKey: 'patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725'})
-    .base('appx04aPv2fM0sc3A');
 
 const LoginContainer = styled.div`
   display: flex;
@@ -53,26 +48,9 @@ const UsernameSpan = styled.span`
 `;
 
 
-export default function Login({selectUser}) {
+export default function Login({selectUser, users}) {
 
     const navigate = useNavigate();
-
-    const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        getUsers();
-    }, []);
-
-    function getUsers() {
-        base('USERS').select({
-            view: "Grid view"
-        }).eachPage(function page(records, processNextPage) {
-            setUsers(records);
-            processNextPage();
-        }, function done(error) {
-            if (error) console.log(error);
-        });
-    }
 
     return (
         <LoginContainer>

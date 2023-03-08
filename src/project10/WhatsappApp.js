@@ -27,14 +27,17 @@ export default function WhatsappApp() {
 
     const [users, setUsers] = useState([]);
 
+    const [allMessages, setAllMessages] = useState([]);
+
     const [firstRender, setFirstRender] = useState(true);
 
     useEffect(() => {
         if (firstRender) {
             getUsers();
+            getAllMessages();
             setFirstRender(false);
         }
-    }, [firstRender]);
+    }, [allMessages, firstRender, users]);
 
     function getUsers() {
         base('USERS').select({
@@ -45,6 +48,22 @@ export default function WhatsappApp() {
         }, function done(err) {
             if (err) console.log(err);
         });
+    }
+
+    function getAllMessages() {
+        base('MESSAGES').select({
+            view: "Grid view"
+        }).eachPage(function page(records, processNextPage) {
+            setAllMessages(records);
+            processNextPage();
+        }, function done(error) {
+            if (error) console.log(error);
+        });
+    }
+
+    function updateAllMessages() {
+        setAllMessages([]);
+        getAllMessages();
     }
 
     function onClick(newID) {
@@ -61,16 +80,16 @@ export default function WhatsappApp() {
                 <Route path="/" element={
                     userId === -1
                         ?
-                        <Login selectUser={selectUser}/>
+                        <Login selectUser={selectUser} users={users}/>
                         :
                         <Container>
                             <ContactListComponent onclick={onClick} profilePhoto={users[userId].get('profilePic')}
-                                                  userId={userId}/>
+                                                  userId={userId} users={users} allMessages={allMessages}/>
                             {users.length === 0 ? <></> :
                                 id === -1 ? <WelcomeComponent/> :
                                     <ConversationComponent profilePic={users[id].get('profilePic')}
                                                            name={users[id].get('username')}
-                                                           id={id} userId={userId}/>}
+                                                           id={id} userId={userId} allMessages={allMessages} updateAllMessages={updateAllMessages}/>}
                         </Container>
                 }
                 />

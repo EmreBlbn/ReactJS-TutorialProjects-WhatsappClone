@@ -151,9 +151,7 @@ const DoubleTickDiv = styled.div`
   flex-direction: row;
 `;
 
-export default function ConversationComponent({profilePic, name, id, userId}) {
-
-    const [allMessages, setAllMessages] = useState([]);
+export default function ConversationComponent({profilePic, name, id, userId, allMessages, updateAllMessages}) {
 
     const [messages, setMessages] = useState([]);
 
@@ -162,39 +160,22 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
     const [fetched, setFetched] = useState(false);
 
     useEffect(() => {
-        if (!fetched) {
-            getAllMessages();
-        }
-        if ((messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
+        if (!fetched || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
             || (messages.length === 0 && allMessages.length !== 0)) {
-            setMessages(getMessages);
+            getMessages();
+            if (!fetched) setFetched(true);
         }
-    }, [allMessages, fetched, getAllMessages, getMessages, id, messages]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    function getAllMessages() {
-        base('MESSAGES').select({
-            view: "Grid view"
-        }).eachPage(function page(records, processNextPage) {
-            setAllMessages(records);
-            setMessages(getMessages());
-            if (messages.length !== 0 || (messages.length === 0 && allMessages.length !== 0)) {
-                setFetched(true);
-            }
-
-            processNextPage();
-        }, function done(error) {
-            if (error) console.log(error);
-        });
-    }
+    }, [allMessages, fetched, getMessages, id, messages]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getMessages() {
-        return allMessages.filter((message) => {
-            return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
-                &&
-                (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
-        })
+        setMessages(
+            allMessages.filter((message) => {
+                return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
+                    &&
+                    (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
+            })
+        );
     }
 
     function openEmojiDiv(event) {
@@ -234,11 +215,9 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                 console.log(record.getId())
             });
         });
-        setAllMessages([]);
         setMessages([]);
-        getAllMessages();
-        getAllMessages();
-        getAllMessages();
+        updateAllMessages();
+        getMessages();
         form.reset();
     }
 
