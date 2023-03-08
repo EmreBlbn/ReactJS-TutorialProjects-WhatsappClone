@@ -33,6 +33,14 @@ import {createRoot} from "react-dom/client";
 import WhatsappApp from "./project10/WhatsappApp";
 import "./project10/index.css";
 
+import Airtable from "airtable";
+import axios from "axios";
+
+new Airtable({apiKey:'API_KEY'}).base('BASE_ID');
+axios.defaults.baseURL =   'https://api.airtable.com/v0/appx04aPv2fM0sc3A/MESSAGES/';
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers['Authorization'] = 'Bearer patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725';
+
 const root = document.querySelector("#react-root");
 
 //Project 1

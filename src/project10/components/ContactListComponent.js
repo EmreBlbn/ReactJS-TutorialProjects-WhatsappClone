@@ -4,6 +4,7 @@ import {TbCircleDashed} from "react-icons/tb";
 import {BiMessageAltDetail} from "react-icons/bi";
 import {BsThreeDotsVertical} from "react-icons/bs";
 import {useEffect, useState} from "react";
+import axios from "axios";
 
 const Airtable = require('airtable');
 const base = new Airtable(
@@ -93,7 +94,7 @@ const ContactName = styled.span`
 `;
 
 const MessageText = styled.span`
-  width: 20%;
+  max-width: 50%;
   font-size: 14px;
   margin-top: 3px;
   color: rgba(0, 0, 0, 0.8);
@@ -105,6 +106,7 @@ const LastMessageDiv = styled.div`
 `;
 
 const DoubleTick = styled.img`
+  padding-left: 5px;
   padding-top: 4px;
   width: 15px;
   height: 15px;
@@ -120,33 +122,38 @@ function ContactComponent({userData, onclick, userId}) {
 
     const [lastTextTime, setLastTextTime] = useState('');
 
+    const [flag, setFlag] = useState(false);
+
 
     useEffect(() => {
-        getAllMessages();
-    }, [getAllMessages]);
+        if (!flag){
+            getAllMessages();
+        }
+    }, [flag, getAllMessages]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
-        base('MESSAGES').select({
-            view: "Grid view"
-        }).eachPage(function page(records, processNextPage) {
+        axios.get("/").then(res => {
+            const records = res.data.records;
+            records.sort(function compareFn(a, b) {
+                if (parseInt(a.fields.msgId) >= parseInt(b.fields.msgId)) return 1;
+                return -1;
+            });
             setAllMessages(records);
             setMessages(getMessages(parseInt(userData.get('userId'))));
-            if (messages.length !== 0) {
-                setLastText(messages[messages.length - 1].get('msg'));
-                setLastTextTime(messages[messages.length - 1].get('sentTime'));
+            if (messages.length !== 0 && allMessages.length !== 0) {
+                setLastText(messages[messages.length - 1].fields.msg);
+                setLastTextTime(messages[messages.length - 1].fields.sentTime);
+                setFlag(true);
             }
-            processNextPage();
-        }, function done(error) {
-            if (error) console.log(error);
         });
     }
 
     function getMessages(id) {
         return allMessages.filter((message) => {
-            return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
+            return (parseInt(message.fields.senderId) === id || parseInt(message.fields.receiverId) === id)
                 &&
-                (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
+                (parseInt(message.fields.senderId) === userId || parseInt(message.fields.receiverId) === userId);
         })
     }
 
@@ -157,8 +164,8 @@ function ContactComponent({userData, onclick, userId}) {
                 <ContactName>{userData.get('username')}</ContactName>
                 <LastMessageDiv>
                     <MessageText>{lastText}</MessageText>
-                    {messages.length !== 0 && parseInt(messages[messages.length - 1].get('senderId')) === userId ?
-                        <DoubleTick src={"/profile/readedDoubleTick.png"}/> : <></>}
+                    {messages.length !== 0 && parseInt(messages[messages.length - 1].fields.senderId) === userId ?
+                        messages[messages.length - 1].fields.readed ? <DoubleTick src={"/profile/readedDoubleTick.png"}/>: <DoubleTick src="/profile/notReadedDoubleTick.png"/> : <></>}
                 </LastMessageDiv>
             </ContactInfo>
             <MessageText>{lastTextTime}</MessageText>

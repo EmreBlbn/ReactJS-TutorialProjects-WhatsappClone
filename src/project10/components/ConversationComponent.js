@@ -155,7 +155,7 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
 
     const [allMessages, setAllMessages] = useState([]);
 
-    const [messages, setMessages] = useState(getMessages(id));
+    const [messages, setMessages] = useState([]);
 
     const [emojiVisibility, setEmojiVisibility] = useState(false);
 
@@ -165,10 +165,11 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         if (!fetched) {
             getAllMessages();
         }
-        if (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id || parseInt(messages[0].get('receiverId')) !== id)) {
+        if ((messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
+            || (messages.length === 0 && allMessages.length !== 0)) {
             setMessages(getMessages);
         }
-    }, [fetched, getAllMessages, getMessages, id, messages]);
+    }, [allMessages, fetched, getAllMessages, getMessages, id, messages]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getAllMessages() {
@@ -177,7 +178,7 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         }).eachPage(function page(records, processNextPage) {
             setAllMessages(records);
             setMessages(getMessages());
-            if (messages.length !== 0) {
+            if (messages.length !== 0 || (messages.length === 0 && allMessages.length !== 0)) {
                 setFetched(true);
             }
 
@@ -211,11 +212,12 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
         event.preventDefault();
         const form = event.target;
         const input = form.item;
+        const msgId = parseInt(allMessages[allMessages.length - 1].get('msgId')) + 1;
 
         base('MESSAGES').create([
             {
                 "fields": {
-                    "msgId": parseInt(allMessages[allMessages.length - 1].get('msgId')) + 1,
+                    "msgId": msgId,
                     "senderId": parseInt(userId),
                     "receiverId": parseInt(id),
                     "msg": input.value,
@@ -232,6 +234,10 @@ export default function ConversationComponent({profilePic, name, id, userId}) {
                 console.log(record.getId())
             });
         });
+        setAllMessages([]);
+        setMessages([]);
+        getAllMessages();
+        getAllMessages();
         getAllMessages();
         form.reset();
     }
