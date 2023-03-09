@@ -31,6 +31,8 @@ export default function WhatsappApp() {
 
     const [firstRender, setFirstRender] = useState(true);
 
+    const [needUpdate, setNeedUpdate] = useState(false);
+
     useEffect(() => {
         if (firstRender) {
             getUsers();
@@ -62,8 +64,8 @@ export default function WhatsappApp() {
     }
 
     function updateAllMessages() {
-        setAllMessages([]);
-        getAllMessages();
+        setFirstRender(true);
+        setNeedUpdate(true);
     }
 
     function onClick(newID) {
@@ -84,7 +86,7 @@ export default function WhatsappApp() {
                         :
                         <Container>
                             <ContactListComponent onclick={onClick} profilePhoto={users[userId].get('profilePic')}
-                                                  userId={userId} users={users} allMessages={allMessages}/>
+                                                  userId={userId} users={users} allMessages={allMessages} needUpdate={needUpdate}/>
                             {users.length === 0 ? <></> :
                                 id === -1 ? <WelcomeComponent/> :
                                     <ConversationComponent profilePic={users[id].get('profilePic')}

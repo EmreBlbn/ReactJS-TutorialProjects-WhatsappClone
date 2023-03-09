@@ -100,13 +100,13 @@ const LastMessageDiv = styled.div`
 `;
 
 const DoubleTick = styled.img`
-  padding-left: 5px;
+  padding-right: 5px;
   padding-top: 4px;
   width: 15px;
   height: 15px;
 `
 
-function ContactComponent({userData, onclick, userId, allMessages}) {
+function ContactComponent({userData, onclick, userId, allMessages, needUpdate}) {
 
     const [messages, setMessages] = useState([]);
 
@@ -118,10 +118,10 @@ function ContactComponent({userData, onclick, userId, allMessages}) {
 
 
     useEffect(() => {
-        if (!flag) {
+        if (!flag || needUpdate) {
             getMessages();
         }
-    }, [flag, getMessages]);
+    }, [flag, getMessages, needUpdate]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getMessages() {
@@ -147,11 +147,11 @@ function ContactComponent({userData, onclick, userId, allMessages}) {
             <ContactInfo>
                 <ContactName>{userData.get('username')}</ContactName>
                 <LastMessageDiv>
-                    <MessageText>{lastText}</MessageText>
                     {messages.length !== 0 && parseInt(messages[messages.length - 1].get('senderId')) === userId ?
                         messages[messages.length - 1].get('readed') ?
                             <DoubleTick src={"/profile/readedDoubleTick.png"}/> :
                             <DoubleTick src="/profile/notReadedDoubleTick.png"/> : <></>}
+                    <MessageText>{lastText}</MessageText>
                 </LastMessageDiv>
             </ContactInfo>
             <MessageText>{lastTextTime}</MessageText>
@@ -187,7 +187,7 @@ const ProfileSymbolDiv = styled.div`
   }
 `;
 
-export default function ContactListComponent({onclick, profilePhoto, userId, users, allMessages}) {
+export default function ContactListComponent({onclick, profilePhoto, userId, users, allMessages, needUpdate}) {
 
     return (
         <Container>
@@ -220,7 +220,7 @@ export default function ContactListComponent({onclick, profilePhoto, userId, use
             </SearchBox>
             {users.map((userData) =>
                 parseInt(userData.get('userId')) !== userId && (
-                    <ContactComponent userData={userData} onclick={onclick} userId={userId} allMessages={allMessages}/>)
+                    <ContactComponent userData={userData} onclick={onclick} userId={userId} allMessages={allMessages} needUpdate={needUpdate}/>)
             )}
         </Container>
     );

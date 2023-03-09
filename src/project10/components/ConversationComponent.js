@@ -162,6 +162,8 @@ export default function ConversationComponent({profilePic, name, id, userId, all
     useEffect(() => {
         if (!fetched || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
             || (messages.length === 0 && allMessages.length !== 0)) {
+            console.log("in useEffect");
+            console.log(allMessages[allMessages.length - 1].get("msg"));
             getMessages();
             if (!fetched) setFetched(true);
         }
@@ -212,12 +214,16 @@ export default function ConversationComponent({profilePic, name, id, userId, all
                 return;
             }
             records.forEach(function (record) {
-                console.log(record.getId())
+                console.log(record.getId());
+                setTimeout(() => {
+                    updateAllMessages();
+                }, 500);
+                setTimeout(() => {
+                    setFetched(false)
+                }, 1000)
             });
         });
-        setMessages([]);
-        updateAllMessages();
-        getMessages();
+
         form.reset();
     }
 
