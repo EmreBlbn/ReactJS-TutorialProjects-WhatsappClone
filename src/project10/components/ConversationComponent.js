@@ -157,17 +157,18 @@ export default function ConversationComponent({profilePic, name, id, userId, all
 
     const [emojiVisibility, setEmojiVisibility] = useState(false);
 
-    const [fetched, setFetched] = useState(false);
+    const [fetched, setFetched] = useState(0);
 
     useEffect(() => {
-        if (!fetched || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
+        if (fetched === 0 || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
             || (messages.length === 0 && allMessages.length !== 0)) {
-            console.log("in useEffect");
-            console.log(allMessages[allMessages.length - 1].get("msg"));
             getMessages();
-            if (!fetched) setFetched(true);
+            setFetched(1);
         }
-    }, [allMessages, fetched, getMessages, id, messages]);
+        if (fetched === 1){
+            readMessages();
+        }
+    }, [allMessages, fetched, getMessages, id, messages, readMessages, updateAllMessages, userId]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     function getMessages() {
@@ -178,6 +179,44 @@ export default function ConversationComponent({profilePic, name, id, userId, all
                     (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
             })
         );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    function readMessages() {
+        console.log("in readMessages");
+        messages.filter((message) => {
+            return !message.get('readed') && parseInt(message.get('receiverId')) === userId;
+        }).forEach((message) => {
+            setFetched(2);
+            console.log(message.get('msg'));
+            base('MESSAGES').update([
+                {
+                    "id": message.getId(),
+                    "fields": {
+                        "msgId": message.get('msgId'),
+                        "senderId": message.get('senderId'),
+                        "receiverId": message.get('receiverId'),
+                        "msg": message.get('msg'),
+                        "sentTime": message.get('sentTime'),
+                        "readed": true
+                    }
+                }
+            ], function (error, records) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                records.forEach(function (record) {
+                    console.log(record);
+                    setTimeout(() => {
+                        updateAllMessages();
+                    }, 500);
+                    setTimeout(() => {
+                        console.log("updated");
+                    }, 1000)
+                });
+            })
+        })
     }
 
     function openEmojiDiv(event) {
@@ -219,7 +258,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
                     updateAllMessages();
                 }, 500);
                 setTimeout(() => {
-                    setFetched(false)
+                    setFetched(0)
                 }, 1000)
             });
         });
