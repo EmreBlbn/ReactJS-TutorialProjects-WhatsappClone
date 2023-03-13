@@ -91,6 +91,7 @@ const MessageText = styled.span`
   max-width: 50%;
   font-size: 14px;
   margin-top: 3px;
+  margin-left: 5px;
   color: rgba(0, 0, 0, 0.8);
 `;
 
@@ -104,6 +105,13 @@ const DoubleTick = styled.img`
   padding-top: 4px;
   width: 15px;
   height: 15px;
+`
+
+const GreenDot = styled.img`
+  margin-top: 4px;
+  margin-right: 10px;
+  height: 30px;
+  width: 30px;
 `
 
 function ContactComponent({userData, onclick, userId, allMessages, needUpdate}) {
@@ -154,6 +162,8 @@ function ContactComponent({userData, onclick, userId, allMessages, needUpdate}) 
                     <MessageText>{lastText}</MessageText>
                 </LastMessageDiv>
             </ContactInfo>
+            {messages.length !== 0 && parseInt(messages[messages.length - 1].get('receiverId')) === userId
+                && !messages[messages.length - 1].get('readed') ? <GreenDot src={"/profile/greenCircle.png"}/> : <></>}
             <MessageText>{lastTextTime}</MessageText>
         </ContactItem>
     );
@@ -220,7 +230,8 @@ export default function ContactListComponent({onclick, profilePhoto, userId, use
             </SearchBox>
             {users.map((userData) =>
                 parseInt(userData.get('userId')) !== userId && (
-                    <ContactComponent userData={userData} onclick={onclick} userId={userId} allMessages={allMessages} needUpdate={needUpdate}/>)
+                    <ContactComponent userData={userData} onclick={onclick} userId={userId} allMessages={allMessages}
+                                      needUpdate={needUpdate}/>)
             )}
         </Container>
     );

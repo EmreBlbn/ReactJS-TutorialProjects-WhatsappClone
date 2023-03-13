@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
 import {useEffect, useState} from "react";
+import { configureAbly, useChannel } from "@ably-labs/react-hooks";
 
 const Airtable = require('airtable');
 const base = new Airtable(
     {apiKey: 'patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725'})
     .base('appx04aPv2fM0sc3A');
+
+configureAbly({ key: "TAsQKw.bgo3rw:WUtyaoJqZAevWB9-6gWxZs_I_DgfUdDXJN03vumfPqs", clientId: "21"});
 
 export const Container = styled.div`
   display: flex;
@@ -159,6 +162,14 @@ export default function ConversationComponent({profilePic, name, id, userId, all
 
     const [fetched, setFetched] = useState(0);
 
+    const [channel] = useChannel("WhatsappClone", (message) => {
+        updateAllMessages();
+        setTimeout(() => {
+            setFetched(0);
+        }, 500);
+        console.log(message.data.text);
+    });
+
     useEffect(() => {
         if (fetched === 0 || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
             || (messages.length === 0 && allMessages.length !== 0)) {
@@ -212,6 +223,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
                         updateAllMessages();
                     }, 500);
                     setTimeout(() => {
+                        channel.publish("test-message", { text: "Update"});
                         console.log("updated");
                     }, 1000)
                 });
@@ -255,7 +267,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
             records.forEach(function (record) {
                 console.log(record.getId());
                 setTimeout(() => {
-                    updateAllMessages();
+                    channel.publish("test-message", { text: "Update"});
                 }, 500);
                 setTimeout(() => {
                     setFetched(0)
