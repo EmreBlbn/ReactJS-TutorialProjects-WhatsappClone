@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import WelcomeComponent from "./components/WelcomeComponent";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Login from "./components/Login";
+import {useChannel} from "@ably-labs/react-hooks";
 
 const Airtable = require('airtable');
 const base = new Airtable(
@@ -32,6 +33,13 @@ export default function WhatsappApp() {
     const [firstRender, setFirstRender] = useState(true);
 
     const [needUpdate, setNeedUpdate] = useState(false);
+
+    const [activeUsers] = useState([false, false, false, false, false, false]);
+
+    const [channel] = useChannel("WhatsappClone", (message) => {
+        console.log("test");
+        authenticate(parseInt(message.data.text));
+    });
 
     useEffect(() => {
         if (firstRender) {
@@ -76,13 +84,17 @@ export default function WhatsappApp() {
         setUserId(newUserId);
     }
 
+    function authenticate(userId) {
+        activeUsers[userId] = true;
+    }
+
     return (
         <Router>
             <Routes>
                 <Route path="/" element={
                     userId === -1
                         ?
-                        <Login selectUser={selectUser} users={users}/>
+                        <Login selectUser={selectUser} users={users} updateAllMessages={updateAllMessages} channel={channel}/>
                         :
                         <Container>
                             <ContactListComponent onclick={onClick} profilePhoto={users[userId].get('profilePic')}
@@ -91,7 +103,7 @@ export default function WhatsappApp() {
                                 id === -1 ? <WelcomeComponent/> :
                                     <ConversationComponent profilePic={users[id].get('profilePic')}
                                                            name={users[id].get('username')}
-                                                           id={id} userId={userId} allMessages={allMessages} updateAllMessages={updateAllMessages}/>}
+                                                           id={id} userId={userId} allMessages={allMessages} updateAllMessages={updateAllMessages} activeUsers={activeUsers}/>}
                         </Container>
                 }
                 />

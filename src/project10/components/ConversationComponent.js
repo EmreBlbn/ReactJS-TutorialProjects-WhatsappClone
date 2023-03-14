@@ -1,14 +1,14 @@
 import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
 import {useEffect, useState} from "react";
-import { configureAbly, useChannel } from "@ably-labs/react-hooks";
+import {configureAbly, useChannel} from "@ably-labs/react-hooks";
 
 const Airtable = require('airtable');
 const base = new Airtable(
     {apiKey: 'patAQiLDt6ApvVmFH.c9569923b72d6ca360cdcc503cc49504bea190f66f0aa5c13290f6807cb3b725'})
     .base('appx04aPv2fM0sc3A');
 
-configureAbly({ key: "TAsQKw.bgo3rw:WUtyaoJqZAevWB9-6gWxZs_I_DgfUdDXJN03vumfPqs", clientId: "21"});
+configureAbly({key: "TAsQKw.bgo3rw:WUtyaoJqZAevWB9-6gWxZs_I_DgfUdDXJN03vumfPqs", clientId: "21"});
 
 export const Container = styled.div`
   display: flex;
@@ -154,7 +154,30 @@ const DoubleTickDiv = styled.div`
   flex-direction: row;
 `;
 
-export default function ConversationComponent({profilePic, name, id, userId, allMessages, updateAllMessages}) {
+const ProfileNameDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ProfileNameSpan = styled.span`
+  font-size: 15px;
+`;
+
+const ProfileActiveStatus = styled.span`
+  margin-top: 5px;
+  font-size: 12px;
+  color: ${(props) => (props.active ? "green" : "gray")};
+`;
+
+export default function ConversationComponent({
+                                                  profilePic,
+                                                  name,
+                                                  id,
+                                                  userId,
+                                                  allMessages,
+                                                  updateAllMessages,
+                                                  activeUsers
+                                              }) {
 
     const [messages, setMessages] = useState([]);
 
@@ -162,7 +185,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
 
     const [fetched, setFetched] = useState(0);
 
-    const [channel] = useChannel("WhatsappClone", (message) => {
+    const [channelUpdate] = useChannel("WhatsappClone", (message) => {
         updateAllMessages();
         setTimeout(() => {
             setFetched(0);
@@ -176,7 +199,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
             getMessages();
             setFetched(1);
         }
-        if (fetched === 1){
+        if (fetched === 1) {
             readMessages();
         }
     }, [allMessages, fetched, getMessages, id, messages, readMessages, updateAllMessages, userId]);
@@ -223,7 +246,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
                         updateAllMessages();
                     }, 500);
                     setTimeout(() => {
-                        channel.publish("test-message", { text: "Update"});
+                        channelUpdate.publish("test-message", {text: "Update"});
                         console.log("updated");
                     }, 1000)
                 });
@@ -267,7 +290,7 @@ export default function ConversationComponent({profilePic, name, id, userId, all
             records.forEach(function (record) {
                 console.log(record.getId());
                 setTimeout(() => {
-                    channel.publish("test-message", { text: "Update"});
+                    channelUpdate.publish("test-message", {text: "Update"});
                 }, 500);
                 setTimeout(() => {
                     setFetched(0)
@@ -282,7 +305,14 @@ export default function ConversationComponent({profilePic, name, id, userId, all
         <Container>
             <ProfileHeader>
                 <ProfileImage src={profilePic}/>
-                {name}
+                <ProfileNameDiv>
+                    <ProfileNameSpan>
+                        {name}
+                    </ProfileNameSpan>
+                    <ProfileActiveStatus active={activeUsers[id]}>
+                        {activeUsers[id] ? "Online" : "Offline"}
+                    </ProfileActiveStatus>
+                </ProfileNameDiv>
             </ProfileHeader>
             <MessageContainer>
                 {messages.map((messageData) => (
