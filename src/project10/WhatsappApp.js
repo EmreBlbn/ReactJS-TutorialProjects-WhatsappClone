@@ -15,7 +15,7 @@ const base = new Airtable(
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: 100vh;
+  height: 99vh;
   width: 100%;
   background: #f8f9fb;
 `;

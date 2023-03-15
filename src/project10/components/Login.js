@@ -76,13 +76,14 @@ const SelectUserDiv = styled.div`
 `;
 
 const SelectUserPhotoText = styled.p`
-  margin-top: 22px;
+  //margin-top: 22px;
   font-size: 16px;
 `
 
 const SelectUserPhoto = styled(UserPhoto)`
-  width: 60px;
-  height: 60px;
+  width: 25%;
+  height: 70%;
+  margin-top: 10px;
   margin-left: 20px;
   cursor: pointer;
   border: ${(props) => (props.isSelected ? '3px solid green' : '')};;
