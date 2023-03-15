@@ -37,8 +37,30 @@ export default function WhatsappApp() {
     const [activeUsers] = useState([false, false, false, false, false, false]);
 
     const [channel] = useChannel("WhatsappClone", (message) => {
-        console.log("test");
-        authenticate(parseInt(message.data.text));
+        let array = message.data.text.split(',');
+        let flag = false;
+        for (let i = 0; i < array.length - 1; i++) {
+            if (array[i] === "false" && activeUsers[i]) {
+                array[i] = "true";
+                flag = true;
+            } else if (array[i] === "true" && !activeUsers[i]){
+                activeUsers[i] = true;
+            }
+        }
+
+        let activeId = parseInt(array[array.length - 1]);
+        if (activeId !== -1) {
+            array[activeId] = "true";
+            activeUsers[activeId] = true;
+        }
+
+        console.log(message.data.text);
+        console.log(activeUsers);
+
+        if (flag) {
+            array[array.length - 1] = "-1";
+            channel.publish("test-message", {text: `${array}`})
+        }
     });
 
     useEffect(() => {
@@ -84,26 +106,26 @@ export default function WhatsappApp() {
         setUserId(newUserId);
     }
 
-    function authenticate(userId) {
-        activeUsers[userId] = true;
-    }
-
     return (
         <Router>
             <Routes>
                 <Route path="/" element={
                     userId === -1
                         ?
-                        <Login selectUser={selectUser} users={users} updateAllMessages={updateAllMessages} channel={channel}/>
+                        <Login selectUser={selectUser} users={users} updateAllMessages={updateAllMessages}
+                               channel={channel} activeUsers={activeUsers}/>
                         :
                         <Container>
                             <ContactListComponent onclick={onClick} profilePhoto={users[userId].get('profilePic')}
-                                                  userId={userId} users={users} allMessages={allMessages} needUpdate={needUpdate}/>
+                                                  userId={userId} users={users} allMessages={allMessages}
+                                                  needUpdate={needUpdate}/>
                             {users.length === 0 ? <></> :
                                 id === -1 ? <WelcomeComponent/> :
                                     <ConversationComponent profilePic={users[id].get('profilePic')}
                                                            name={users[id].get('username')}
-                                                           id={id} userId={userId} allMessages={allMessages} updateAllMessages={updateAllMessages} activeUsers={activeUsers}/>}
+                                                           id={id} userId={userId} allMessages={allMessages}
+                                                           updateAllMessages={updateAllMessages}
+                                                           activeUsers={activeUsers}/>}
                         </Container>
                 }
                 />

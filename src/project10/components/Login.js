@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 const Airtable = require('airtable');
 const base = new Airtable(
@@ -102,7 +102,7 @@ const CreateUserButton = styled.button`
 `;
 
 
-export default function Login({selectUser, users, updateAllMessages, channel}) {
+export default function Login({selectUser, users, updateAllMessages, channel, activeUsers}) {
 
     const navigate = useNavigate();
 
@@ -157,30 +157,13 @@ export default function Login({selectUser, users, updateAllMessages, channel}) {
         }
     }
 
-    useEffect(() => {
-        const handleTabClose = event => {
-            event.preventDefault();
-
-            console.log('beforeunload event triggered');
-
-            return (event.returnValue =
-                'Are you sure you want to exit?');
-        };
-
-        window.addEventListener('beforeunload', handleTabClose);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleTabClose);
-        };
-    }, []);
-
 
     return (
         <LoginContainer>
             <LoginDiv>
                 {users.map((user) => (
                     <UserDiv onClick={() => {
-                        channel.publish("test-message", {text: `${user.get('userId')}`});
+                        channel.publish("test-message", {text: `${activeUsers},${user.get('userId')}`});
                         selectUser(parseInt(user.get('userId')));
                         navigate('/');
                     }}>
