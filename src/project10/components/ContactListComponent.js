@@ -3,7 +3,7 @@ import {MdGroups} from "react-icons/md";
 import {TbCircleDashed} from "react-icons/tb";
 import {BiMessageAltDetail} from "react-icons/bi";
 import {BsThreeDotsVertical} from "react-icons/bs";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 const Container = styled.div`
   display: flex;
@@ -124,30 +124,28 @@ function ContactComponent({userData, onclick, userId, allMessages, needUpdate}) 
 
     const [flag, setFlag] = useState(false);
 
+    const getMessagesByID = useCallback((id) => {
+        return allMessages.filter((message) => {
+            return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
+                &&
+                (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
+        });
+    }, [allMessages, userId]);
 
-    useEffect(() => {
-        if (!flag || needUpdate) {
-            getMessages();
-        }
-    }, [flag, getMessages, needUpdate]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    function getMessages() {
+    const getMessages = useCallback(() => {
         setMessages(getMessagesByID(parseInt(userData.get('userId'))));
         if (messages.length !== 0 && allMessages.length !== 0) {
             setLastText(messages[messages.length - 1].get('msg'));
             setLastTextTime(messages[messages.length - 1].get('sentTime'));
             setFlag(true);
         }
-    }
+    }, [allMessages.length, getMessagesByID, messages, userData]);
 
-    function getMessagesByID(id) {
-        return allMessages.filter((message) => {
-            return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
-                &&
-                (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
-        });
-    }
+    useEffect(() => {
+        if (!flag || needUpdate) {
+            getMessages();
+        }
+    }, [flag, getMessages, needUpdate]);
 
     return (
         <ContactItem onClick={() => onclick(parseInt(userData.get('userId')))}>
@@ -163,7 +161,7 @@ function ContactComponent({userData, onclick, userId, allMessages, needUpdate}) 
                 </LastMessageDiv>
             </ContactInfo>
             {messages.length !== 0 && parseInt(messages[messages.length - 1].get('receiverId')) === userId
-                && !messages[messages.length - 1].get('readed') ? <GreenDot src={"/profile/greenCircle.png"}/> : <></>}
+            && !messages[messages.length - 1].get('readed') ? <GreenDot src={"/profile/greenCircle.png"}/> : <></>}
             <MessageText>{lastTextTime}</MessageText>
         </ContactItem>
     );

@@ -69,7 +69,8 @@ export default function WhatsappApp() {
             getAllMessages();
             setFirstRender(false);
         }
-    }, [allMessages, firstRender, users]);
+        console.log("Whatsapp App useEffect works")
+    }, [firstRender]);
 
     function getUsers() {
         base('USERS').select({

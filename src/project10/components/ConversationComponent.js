@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {SearchContainer, SearchInput} from "./ContactListComponent";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {configureAbly, useChannel} from "@ably-labs/react-hooks";
 
 const Airtable = require('airtable');
@@ -193,19 +193,7 @@ export default function ConversationComponent({
         console.log(message.data.text);
     });
 
-    useEffect(() => {
-        if (fetched === 0 || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
-            || (messages.length === 0 && allMessages.length !== 0)) {
-            getMessages();
-            setFetched(1);
-        }
-        if (fetched === 1) {
-            readMessages();
-        }
-    }, [allMessages, fetched, getMessages, id, messages, readMessages, updateAllMessages, userId]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    function getMessages() {
+    const getMessages = useCallback(() => {
         setMessages(
             allMessages.filter((message) => {
                 return (parseInt(message.get('senderId')) === id || parseInt(message.get('receiverId')) === id)
@@ -213,10 +201,9 @@ export default function ConversationComponent({
                     (parseInt(message.get('senderId')) === userId || parseInt(message.get('receiverId')) === userId);
             })
         );
-    }
+    }, [allMessages, id, userId]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    function readMessages() {
+    const readMessages = useCallback(() => {
         console.log("in readMessages");
         messages.filter((message) => {
             return !message.get('readed') && parseInt(message.get('receiverId')) === userId;
@@ -252,7 +239,27 @@ export default function ConversationComponent({
                 });
             })
         })
-    }
+    }, [channelUpdate, messages, updateAllMessages, userId])
+
+    useEffect(() => {
+        let hasMessage = false;
+        for (let i = 0; i < allMessages.length; i++){
+            if (parseInt(allMessages[i].get('senderId')) === id || parseInt(allMessages[i].get('receiverId')) === id){
+                hasMessage = true;
+                i = allMessages.length;
+            }
+        }
+        if (fetched === 0 || (messages.length !== 0 && (parseInt(messages[0].get('senderId')) !== id && parseInt(messages[0].get('receiverId')) !== id))
+            || (messages.length === 0 && hasMessage)) {
+            getMessages();
+            setFetched(1);
+        }
+        if (fetched === 1) {
+            readMessages();
+        }
+        console.log("Conversation useEffect runs")
+    }, [allMessages, fetched, getMessages, id, messages, readMessages, updateAllMessages, userId]);
+
 
     function openEmojiDiv(event) {
         event.preventDefault();
@@ -270,6 +277,11 @@ export default function ConversationComponent({
         const form = event.target;
         const input = form.item;
         const msgId = parseInt(allMessages[allMessages.length - 1].get('msgId')) + 1;
+        let hour = new Date().getHours().toString();
+        if (hour.length === 1) hour = `0${hour}`;
+        let minute = new Date().getMinutes().toString();
+        if (minute.length === 1) minute = `0${minute}`;
+
 
         base('MESSAGES').create([
             {
@@ -278,7 +290,7 @@ export default function ConversationComponent({
                     "senderId": parseInt(userId),
                     "receiverId": parseInt(id),
                     "msg": input.value,
-                    "sentTime": `${new Date().getHours()}:${new Date().getMinutes()}`,
+                    "sentTime": `${hour}:${minute}`,
                     "readed": false
                 }
             }
