@@ -61,6 +61,7 @@ const MessageContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 85%;
+  overflow-y: auto;
 `;
 
 const MessageDiv = styled.div`
@@ -243,8 +244,8 @@ export default function ConversationComponent({
 
     useEffect(() => {
         let hasMessage = false;
-        for (let i = 0; i < allMessages.length; i++){
-            if (parseInt(allMessages[i].get('senderId')) === id || parseInt(allMessages[i].get('receiverId')) === id){
+        for (let i = 0; i < allMessages.length; i++) {
+            if (parseInt(allMessages[i].get('senderId')) === id || parseInt(allMessages[i].get('receiverId')) === id) {
                 hasMessage = true;
                 i = allMessages.length;
             }

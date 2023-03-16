@@ -10,6 +10,7 @@ const Container = styled.div`
   flex-direction: column;
   height: 100%;
   flex: 0.8;
+  overflow-y: auto;
 `;
 
 const ProfileInfoDiv = styled.div`
